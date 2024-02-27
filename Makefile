@@ -7,4 +7,4 @@ lex.yy.c: cmos.l
 	lex $<
 
 clean:
-	rm scanner *.txt
+	-@ rm -f lex.yy.c scanner *.txt
