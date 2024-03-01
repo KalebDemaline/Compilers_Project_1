@@ -21,7 +21,9 @@ using namespace std;
 #define TK_COMMA 10
 #define TK_DATATYPE 11
 #define TK_STRING 12
-#define TK_NUMBER 13
+#define TK_CHAR 13
+#define TK_NUMBER 14
+#define TK_CONTROL 15
 
 unordered_map<int,string> lookup = {
 	{-1,"COMMENT"},
@@ -38,7 +40,9 @@ unordered_map<int,string> lookup = {
 	{10,"COMMA"},
 	{11,"DATATYPE"},
 	{12,"STRING"},
-	{13,"TK_NUMBER"},
+	{13,"CHAR"},
+	{14,"NUMBER"},
+	{15,"CONTROL"},
 };
 
 int linecount = 1;
@@ -56,10 +60,12 @@ OD [0-9Xx#*$]
 	// TERTIARY	? :
 	// +-!~&*=/%^><?
 	// BOOOOO ^
-OP [\+\-\!\~\&\*\=\/\%\^\>\<\?]
+OP [\+\-\!\~\&\*\=\/\%\^\>\<\?\|]
 DT "int"|"bool"|"char"|"float"|"double"|"void"
-
-	// TODO CONTROL_FLOW STRING_LITERALS 
+CF "break"|"case"|"continue"|"default"|"do"|"else"|"for"|"if"|"return"|"switch"|"goto"|"while"
+	
+	// TODO SPLIT UP OPERATORS
+	// TODO DATATYPE SPLIT UP
 
 %%
 	// Translation Rules
@@ -80,11 +86,12 @@ DT "int"|"bool"|"char"|"float"|"double"|"void"
 \]							{	return TK_CLOSED_SB;}
 \;							{	return TK_SEMICOLON;}
 \,							{	return TK_COMMA;	}
-\".*\"						{	return TK_STRING;	}
+\"[^\"]*\"					{	return TK_STRING;	}
+\'[^\']*\'					{	return TK_CHAR;		}
 ({D}*\.{D}*)|{D}+			{	return TK_NUMBER;	}
 {OP}						{	return TK_OPERATOR;	}
 {DT}						{	return TK_DATATYPE;	}
-
+{CF}						{	return TK_CONTROL;	}
 {F}+						{	return TK_IDENTIFIER;}
 
 [ \t\n\f]					{	check_for_newline(yytext[0]); }
