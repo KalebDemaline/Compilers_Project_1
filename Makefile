@@ -1,4 +1,4 @@
-COMPILE = g++
+COMPILE = g++ -std=c++11
 
 scanner: lex.yy.c
 	$(COMPILE) $< -o $@
