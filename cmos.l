@@ -2,37 +2,94 @@
 	// Declarations
 
 #include <iostream>
+#include <algorithm>
+#include <map>
 
 using namespace std;
 
-#define CTOKEN 69
-#define TKUNMATCHED 70
+#define TK_COMMENT -1
+#define TK_INCLUDE -2
+#define TK_OPEN_P 1
+#define TK_CLOSED_P 2
+#define TK_OPEN_CB 3
+#define TK_CLOSED_CB 4
+#define TK_OPEN_SB 5
+#define TK_CLOSED_SB 6
+#define TK_OPERATOR 7
+#define TK_IDENTIFIER 8
+#define TK_SEMICOLON 9
+#define TK_COMMA 10
+#define TK_DATATYPE 11
+#define TK_STRING 12
+#define TK_NUMBER 13
+
+unordered_map<int,string> lookup = {
+	{-1,"COMMENT"},
+	{-2,"INCLUDE"},
+	{1,"OPEN_P"},
+	{2,"CLOSED_P"},
+	{3,"OPEN_CB"},
+	{4,"CLOSED_CB"},
+	{5,"OPEN_SB"},
+	{6,"CLOSED_SB"},
+	{7,"OPERATOR"},
+	{8,"IDENTIFIER"},
+	{9,"SEMICOLON"},
+	{10,"COMMA"},
+	{11,"DATATYPE"},
+	{12,"STRING"},
+	{13,"TK_NUMBER"},
+};
+
 int linecount = 1;
-int num_of_c = 0;
 
 void check_for_newline(char c) {if(c == '\n') linecount++;}
 
-void increment_c() {num_of_c++;}
-
-int line_num() {return linecount;}
-
-int num_c() {return num_of_c;}
-
 %}
 
+L [a-zA-Z]
+F [a-zA-Z0-9_]
 D [0-9]
 OD [0-9Xx#*$]
+	// URNARY	++ -- ! ~ & *
+	// BINARY	+ - * / % += -= *= /= %=	=	&= |= ^= >>= <<=	== != > < >= <=		&& || 
+	// TERTIARY	? :
+	// +-!~&*=/%^><?
+	// BOOOOO ^
+OP [\+\-\!\~\&\*\=\/\%\^\>\<\?]
+DT "int"|"bool"|"char"|"float"|"double"|"void"
+
+	// TODO CONTROL_FLOW STRING_LITERALS 
 
 %%
 	// Translation Rules
+\/\/.*\n					{	linecount++;
+								return TK_COMMENT;	}
 
-c							{ 	increment_c();
-								return CTOKEN;
-							}
+\/\*[^*|*+^\\]*\*+\/		{	linecount += count(yytext, yytext + strlen(yytext), '\n');
+								return TK_COMMENT;	}
+
+#include<[a-z.]*>			{ 	return TK_INCLUDE;	}
+#include\"[a-z.]*\"			{ 	return TK_INCLUDE;	}
+
+\(							{	return TK_OPEN_P;	}
+\)							{	return TK_CLOSED_P;	}
+\{							{	return TK_OPEN_CB;	}
+\}							{	return TK_CLOSED_CB;}
+\[							{	return TK_OPEN_SB;	}
+\]							{	return TK_CLOSED_SB;}
+\;							{	return TK_SEMICOLON;}
+\,							{	return TK_COMMA;	}
+\".*\"						{	return TK_STRING;	}
+({D}*\.{D}*)|{D}+			{	return TK_NUMBER;	}
+{OP}						{	return TK_OPERATOR;	}
+{DT}						{	return TK_DATATYPE;	}
+
+{F}+						{	return TK_IDENTIFIER;}
 
 [ \t\n\f]					{	check_for_newline(yytext[0]); }
 
-.							{ 	return TKUNMATCHED;	}
+.							{ 	/*Do Nothing*/	}
 
 %%
 	// Auxilliary
@@ -43,13 +100,8 @@ int main() {
 	int token = 0;
 	token = yylex();
 	while(token){
-		switch (token) {
-			case CTOKEN:
-				cout << "Found C #" << num_c() << " on line " << line_num() << "\n";
-				break;
-			case TKUNMATCHED:
-				break;
-			}
+		cout << linecount << '\t' << lookup[token] << '\n';
+		// cout << token << "\t\t" << linecount << '\n';
 		token = yylex();
 	}
 }	
