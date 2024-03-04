@@ -16,21 +16,21 @@ vector<string> tokens;
 vector<size_t> hashes;
 vector<pair<size_t,int>> record;
 
-void winnow (int window_size){
-    deque<int> buffer(window_size, INT_MAX);
+void winnow (int w){
+    deque<int> buffer(w, INT_MAX);
 
     int r = 0;
     int min_hash_index = 0;
 
     for (int k_index = 0; k_index < hashes.size(); k_index++){    
-        r = (r+1) % window_size;
+        r = (r+1) % w;
         // buffer[r] = hashes[k_index];    // Add next hash
         buffer.push_back(hashes[k_index]);
         buffer.pop_front();
 
         if (min_hash_index == r){
             // find rightmost min
-            for (int i = (r-1)%window_size; i != r; i = (i-1+window_size)%window_size)
+            for (int i = (r-1)%w; i != r; i = (i-1+w)%w)
                 if (buffer[i] < buffer[min_hash_index]) min_hash_index = i;
             record.push_back({buffer[min_hash_index],k_index});
         } else {
@@ -65,28 +65,37 @@ int main(){
     cout << "\n\n" << record.size() << '\n';
 }
 
-// int winnow (int window_size){
-//     deque<int> buffer(window_size, INT_MAX);
-//     vector<pair<int,int>> record;
-
-//     int r = 0;
-//     int min_hash_index = 0;
-    
-//     while (true){
-//         r = (r+1) % window_size;
-//         buffer[r] = next_hash();    // Add next hash
-
-//         if (min_hash_index == r){
-//             // find rightmost min
-//             for (int i = (r-1)%window_size; i != r; i = (i-1+window_size)%window_size)
-//                 if (buffer[i] < buffer[min_hash_index]) min_hash_index = i;
-//             record(buffer[min_hash_index], global_pos(min_hash_index, r, window_size))
+// void winnow(int w /*window size*/) {
+//     // circular buffer implementing window of size w
+//     hash_t h[w];
+//     for (int i=0; i<w; ++i) h[i] = INT_MAX;
+//     int r = 0; // window right end
+//     int min = 0; // index of minimum hash
+//     // At the end of each iteration, min holds the
+//     // position of the rightmost minimal hash in the
+//     // current window. record(x) is called only the
+//     // first time an instance of x is selected as the
+//     // rightmost minimal hash of a window.
+//     while (true) {
+//         r = (r + 1) % w; // shift the window by one
+//         h[r] = next_hash(); // and add one new hash
+//         if (min == r) {
+//             // The previous minimum is no longer in this
+//             // window. Scan h leftward starting from r
+//             // for the rightmost minimal hash. Note min
+//             // starts with the index of the rightmost
+//             // hash.
+//             for(int i=(r-1)%w; i!=r; i=(i-1+w)%w)
+//                 if (h[i] < h[min]) min = i;
+//             record(h[min], global_pos(min, r, w));
 //         } else {
-//             if (buffer[r] <= buffer[min_hash_index]){
-//                 min_hash_index = r;
-//                 record(buffer[min_hash_index], global_pos(min_hash_index, r, window_size));
+//             // Otherwise, the previous minimum is still in
+//             // this window. Compare against the new value
+//             // and update min if necessary.
+//             if (h[r] <= h[min]) { // (*)
+//                 min = r;
+//                 record(h[min], global_pos(min, r, w));
 //             }
 //         }
 //     }
-//     return 0;
 // }
