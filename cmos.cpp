@@ -14,29 +14,25 @@ using namespace std;
 
 vector<string> tokens;
 vector<size_t> hashes;
-vector<pair<size_t,int>> record;
+vector<pair<int,size_t>> record;
 
 void winnow (int w){
-    deque<int> buffer(w, INT_MAX);
+    deque<size_t> buffer(w, INT_MAX);
+    int min_hash_index = w;
 
-    int r = 0;
-    int min_hash_index = 0;
-
-    for (int k_index = 0; k_index < hashes.size(); k_index++){    
-        r = (r+1) % w;
-        // buffer[r] = hashes[k_index];    // Add next hash
-        buffer.push_back(hashes[k_index]);
+    for (int k_idx = 0; k_idx < hashes.size(); k_idx++){
+        buffer.push_back(hashes[k_idx]);
         buffer.pop_front();
-
-        if (min_hash_index == r){
-            // find rightmost min
-            for (int i = (r-1)%w; i != r; i = (i-1+w)%w)
+        min_hash_index--;
+        
+        if (min_hash_index == -1){
+            for(int i = w-1; i >= 0; i--)
                 if (buffer[i] < buffer[min_hash_index]) min_hash_index = i;
-            record.push_back({buffer[min_hash_index],k_index});
+            record.push_back({k_idx, buffer[min_hash_index]});
         } else {
-            if (buffer[r] <= buffer[min_hash_index]){
-                min_hash_index = r;
-                record.push_back({buffer[min_hash_index],k_index});
+            if (buffer.back() <= buffer[min_hash_index]){
+                min_hash_index = w-1;
+                record.push_back({k_idx, buffer[min_hash_index]});
             }
         }
     }
@@ -44,58 +40,22 @@ void winnow (int w){
 
 int main(){
     string token, tmp;
-    int window_size = 8;
+    int k = 10,w = 8;
     hash<string> magic_hash_machine;
     while(cin >> token) tokens.push_back(token);
 
-    hashes.resize(tokens.size()-window_size);
+    hashes.resize(tokens.size()-k);
 
-    for (int i = 0; i < tokens.size()-window_size; i++){
-        for (int j = i; j < i + window_size; j++)
+    for (int i = 0; i < tokens.size()-k; i++){
+        for (int j = i; j < i + k; j++)
             tmp += tokens[j];
         hashes[i] = magic_hash_machine(tmp);
     }
 
-    winnow(window_size);
+    winnow(w);
 
-    for(auto h: record){
-        cout << h.second << '\t' << h.first << '\n';
-    }
+    for(auto h: record)
+        cout << h.first << '\t' << h.second << '\n';
     
     cout << "\n\n" << record.size() << '\n';
 }
-
-// void winnow(int w /*window size*/) {
-//     // circular buffer implementing window of size w
-//     hash_t h[w];
-//     for (int i=0; i<w; ++i) h[i] = INT_MAX;
-//     int r = 0; // window right end
-//     int min = 0; // index of minimum hash
-//     // At the end of each iteration, min holds the
-//     // position of the rightmost minimal hash in the
-//     // current window. record(x) is called only the
-//     // first time an instance of x is selected as the
-//     // rightmost minimal hash of a window.
-//     while (true) {
-//         r = (r + 1) % w; // shift the window by one
-//         h[r] = next_hash(); // and add one new hash
-//         if (min == r) {
-//             // The previous minimum is no longer in this
-//             // window. Scan h leftward starting from r
-//             // for the rightmost minimal hash. Note min
-//             // starts with the index of the rightmost
-//             // hash.
-//             for(int i=(r-1)%w; i!=r; i=(i-1+w)%w)
-//                 if (h[i] < h[min]) min = i;
-//             record(h[min], global_pos(min, r, w));
-//         } else {
-//             // Otherwise, the previous minimum is still in
-//             // this window. Compare against the new value
-//             // and update min if necessary.
-//             if (h[r] <= h[min]) { // (*)
-//                 min = r;
-//                 record(h[min], global_pos(min, r, w));
-//             }
-//         }
-//     }
-// }
