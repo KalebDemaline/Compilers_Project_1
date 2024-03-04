@@ -7,31 +7,86 @@
 // fingerprints indicates potential plagiarism.
 
 #include <iostream>
+#include <deque>
+#include <functional>
 
 using namespace std;
 
-// void winnow(int window_size /*window size*/) {
-//     // circular buffer implementing window of size w
-//     hash_t h[window_size];
-//     for (int i = 0; i < window_size; ++i) h[i] = INT_MAX;
-//     int right = 0; // window right end
+vector<string> tokens;
+vector<size_t> hashes;
+vector<pair<size_t,int>> record;
+
+void winnow (int window_size){
+    deque<int> buffer(window_size, INT_MAX);
+
+    int r = 0;
+    int min_hash_index = 0;
+
+    for (int k_index = 0; k_index < hashes.size(); k_index++){    
+        r = (r+1) % window_size;
+        // buffer[r] = hashes[k_index];    // Add next hash
+        buffer.push_back(hashes[k_index]);
+        buffer.pop_front();
+
+        if (min_hash_index == r){
+            // find rightmost min
+            for (int i = (r-1)%window_size; i != r; i = (i-1+window_size)%window_size)
+                if (buffer[i] < buffer[min_hash_index]) min_hash_index = i;
+            record.push_back({buffer[min_hash_index],k_index});
+        } else {
+            if (buffer[r] <= buffer[min_hash_index]){
+                min_hash_index = r;
+                record.push_back({buffer[min_hash_index],k_index});
+            }
+        }
+    }
+}
+
+int main(){
+    string token, tmp;
+    int window_size = 8;
+    hash<string> magic_hash_machine;
+    while(cin >> token) tokens.push_back(token);
+
+    hashes.resize(tokens.size()-window_size);
+
+    for (int i = 0; i < tokens.size()-window_size; i++){
+        for (int j = i; j < i + window_size; j++)
+            tmp += tokens[j];
+        hashes[i] = magic_hash_machine(tmp);
+    }
+
+    winnow(window_size);
+
+    for(auto h: record){
+        cout << h.second << '\t' << h.first << '\n';
+    }
+    
+    cout << "\n\n" << record.size() << '\n';
+}
+
+// int winnow (int window_size){
+//     deque<int> buffer(window_size, INT_MAX);
+//     vector<pair<int,int>> record;
+
+//     int r = 0;
 //     int min_hash_index = 0;
-//     while (true) {
-//         right = (right + 1) % window_size;
-//         h[right] = next_hash();
-//         if (min_hash_index == right) {
-//             for(int i = (right-1) % window_size; i != right; i = (i-1+window_size) % window_size)
-//             if (h[i] < h[min_hash_index]) min_hash_index = i;
-//             record(h[min_hash_index], global_pos(min_hash_index, right, window_size));
+    
+//     while (true){
+//         r = (r+1) % window_size;
+//         buffer[r] = next_hash();    // Add next hash
+
+//         if (min_hash_index == r){
+//             // find rightmost min
+//             for (int i = (r-1)%window_size; i != r; i = (i-1+window_size)%window_size)
+//                 if (buffer[i] < buffer[min_hash_index]) min_hash_index = i;
+//             record(buffer[min_hash_index], global_pos(min_hash_index, r, window_size))
 //         } else {
-//             if (h[right] <= h[min_hash_index]) {
-//                 min_hash_index = right;
-//                 record(h[min_hash_index], global_pos(min_hash_index, right, window_size));
+//             if (buffer[r] <= buffer[min_hash_index]){
+//                 min_hash_index = r;
+//                 record(buffer[min_hash_index], global_pos(min_hash_index, r, window_size));
 //             }
 //         }
 //     }
+//     return 0;
 // }
-
-int main(){
-
-}
