@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <iomanip>
 
 using namespace std;
 
@@ -168,7 +169,7 @@ int main() {
 	int token = 0;
 	token = yylex();
 	while(token){
-		cout << token << '\n';
+		cout << setfill ('0') << std::setw (2) << token << ' ';
 		token = yylex();
 	}
 }	
