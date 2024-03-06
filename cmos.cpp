@@ -1,11 +1,3 @@
-// A C++ program that can read in one file containing all tokenized submissions
-// (tokens.txt) and performs the fingerprint analysis as described in the Winnowing Algorithm
-// paper.
-
-// 2. Create digital “fingerprints” for each program based on the tokenized code.
-// 3. Compare pairs of programs for number of matching fingerprints. A higher number of matching
-// fingerprints indicates potential plagiarism.
-
 #include <iostream>
 #include <deque>
 #include <functional>
