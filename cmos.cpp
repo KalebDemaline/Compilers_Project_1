@@ -11,11 +11,12 @@
 #include <functional>
 #include <vector>
 #include <algorithm>
+#include <climits>
 
 using namespace std;
 
 vector<pair<size_t,int>> winnow (int w, const vector<string>& k_grams, hash<string>& hasher){
-    deque<size_t> buffer(w, SIZE_MAX);
+    deque<size_t> buffer(w, SIZE_T_MAX);
     vector<pair<size_t,int>> fingerprints;
     int min_hash_index = 0;
 
