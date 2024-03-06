@@ -12,12 +12,14 @@
 #include <vector>
 #include <algorithm>
 #include <climits>
+#include <iterator>
+#include <iomanip>
 
 using namespace std;
 
-vector<pair<size_t,int>> winnow (int w, const vector<string>& k_grams, hash<string>& hasher){
+vector<size_t> winnow (int w, const vector<string>& k_grams, hash<string>& hasher){
     deque<size_t> buffer(w, SIZE_T_MAX);
-    vector<pair<size_t,int>> fingerprints;
+    vector<size_t> fingerprints;
     int min_hash_index = 0;
 
     // Load initial w k grams
@@ -35,11 +37,11 @@ vector<pair<size_t,int>> winnow (int w, const vector<string>& k_grams, hash<stri
             min_hash_index = w-1;
             for(int i = w-1; i >= 0; i--)
                 if (buffer[i] < buffer[min_hash_index]) min_hash_index = i;
-            fingerprints.push_back({buffer[min_hash_index],k_idx - (w-1-min_hash_index)});
+            fingerprints.push_back(buffer[min_hash_index]);
         } else {
             if (buffer.back() <= buffer[min_hash_index]){
                 min_hash_index = w-1;
-                fingerprints.push_back({buffer[min_hash_index],k_idx});
+                fingerprints.push_back(buffer[min_hash_index]);
             }
         }
     }
@@ -47,10 +49,10 @@ vector<pair<size_t,int>> winnow (int w, const vector<string>& k_grams, hash<stri
 }
 
 int main(){
-    int k = 5, w = 4;
+    int k = 20, w = 20;
     hash<string> hasher;
     vector<string> filenames;
-    vector<vector<pair<size_t,int>>> fingerprints;
+    vector<vector<size_t>> fingerprints;
 
     string filename, tokens;
 
@@ -68,4 +70,29 @@ int main(){
     }
 
     // TODO Compare fingerprints
+
+    // Compare Fingerprints
+    for (int i = 0; i < fingerprints.size(); i++)
+        sort(fingerprints[i].begin(), fingerprints[i].end());
+
+    vector<pair<float, string>> similarity_scores;
+    
+    for (int i = 0; i < fingerprints.size(); i++){
+        for (int j = i+1; j < fingerprints.size(); j++){
+            vector<size_t> intersection;
+            set_intersection(
+                fingerprints[i].begin(), fingerprints[i].end(),
+                fingerprints[j].begin(), fingerprints[j].end(),
+                back_inserter(intersection)
+            );
+            similarity_scores.push_back({(float)intersection.size() / (float)fingerprints[i].size(), filenames[i] + ' ' + filenames[j]});
+            intersection.clear();
+        }
+    }
+
+    sort(similarity_scores.rbegin(), similarity_scores.rend());
+
+    for (auto score: similarity_scores){
+        cout << setprecision(3) << setfill('0') << fixed << score.first << "\t" << score.second << '\n';
+    }
 }
