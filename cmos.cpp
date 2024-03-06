@@ -52,9 +52,9 @@ int main(){
     string filename, tokens;
 
     while(cin >> filename && getline(cin, tokens)){
+        filenames.push_back(filename);
         auto end = remove_if(tokens.begin(),tokens.end(),[](char c){return c == ' ';});
         tokens.erase(end,tokens.end());
-        filenames.push_back(filename);
 
         vector<string> k_grams;
         for (int i = 0; i <= tokens.size()-k; i++)
