@@ -12,20 +12,19 @@
 
 using namespace std;
 
-vector<pair<size_t,int>> winnow (int w, const vector<size_t>& get_hash){
+vector<pair<size_t,int>> winnow (int w, const vector<string>& k_grams, hash<string>& hasher){
     deque<size_t> buffer(w, SIZE_T_MAX);
     vector<pair<size_t,int>> fingerprints;
     int min_hash_index = 0;
 
-    // Load initial k grams
-    for (int k_idx = 0; k_idx < w-1; k_idx++){
-        buffer.push_back(get_hash[k_idx]);
+    // Load initial w k grams
+    for (int k_idx = 0; k_idx < w; k_idx++){
+        buffer.push_back(hasher(k_grams[k_idx]));
         buffer.pop_front();
-        min_hash_index--;
     }
 
-    for (int k_idx = w-1; k_idx < get_hash.size(); k_idx++){
-        buffer.push_back(get_hash[k_idx]);
+    for (int k_idx = w; k_idx < k_grams.size(); k_idx++){
+        buffer.push_back(hasher(k_grams[k_idx]));
         buffer.pop_front();
         min_hash_index--;
         
@@ -45,29 +44,25 @@ vector<pair<size_t,int>> winnow (int w, const vector<size_t>& get_hash){
 }
 
 int main(){
-    string token, tmp;
     int k = 5, w = 4;
-    hash<string> magic_hash_machine;
-    vector<string> tokens;
+    hash<string> hasher;
+    vector<string> filenames;
+    vector<vector<pair<size_t,int>>> fingerprints;
 
-    while(cin >> token) tokens.push_back(token);
-    vector<size_t> kgram_hash(tokens.size()-k);
+    string filename, tokens;
 
-    for (int i = 0; i < tokens.size()-k; i++){
-        for (int j = i; j < i + k; j++)
-            tmp += tokens[j];
-        kgram_hash[i] = magic_hash_machine(tmp);
+    while(cin >> filename && getline(cin, tokens)){
+        auto end = remove_if(tokens.begin(),tokens.end(),[](char c){return c == ' ';});
+        tokens.erase(end,tokens.end());
+        filenames.push_back(filename);
+
+        vector<string> k_grams;
+        for (int i = 0; i <= tokens.size()-k; i++)
+            k_grams.push_back(tokens.substr(i, k));
+        
+        auto fp = winnow(w,k_grams,hasher);
+        fingerprints.push_back(fp);
     }
 
-    cout << "\n\n" << kgram_hash.size() << '\n';
-
-    // vector<size_t> kgram_hash2 = {77,74,42,17,98,50,17,98,8,88,67,39,77,74,42,17,98};
-    // auto fingerprints = winnow(w,kgram_hash2);
-    
-    auto fingerprints = winnow(w,kgram_hash);
-
-    for(auto fp: fingerprints)
-        cout << fp.first << '\t' << fp.second << '\n';
-    
-    cout << "\n\n" << fingerprints.size() << '\n';
+    // TODO Compare fingerprints
 }
