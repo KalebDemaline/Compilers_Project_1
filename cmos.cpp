@@ -69,8 +69,6 @@ int main(){
         fingerprints.push_back(fp);
     }
 
-    // TODO Compare fingerprints
-
     // Compare Fingerprints
     for (int i = 0; i < fingerprints.size(); i++)
         sort(fingerprints[i].begin(), fingerprints[i].end());
