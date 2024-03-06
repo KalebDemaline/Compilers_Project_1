@@ -2,4 +2,4 @@ lex.yy.c
 scanner
 .vscode
 *.txt
-*+
+cmos
