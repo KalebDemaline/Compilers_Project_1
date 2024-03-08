@@ -1,3 +1,5 @@
+# Jansen Craft & Kaleb Demaline 
+
 COMPILE = g++ -std=c++11
 
 all: cmos scanner

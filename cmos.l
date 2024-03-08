@@ -1,3 +1,5 @@
+	// Jansen Craft & Kaleb Demaline 
+	
 %{
 	// Declarations
 
@@ -50,51 +52,6 @@ using namespace std;
 #define TK_RETURN 40
 #define TK_GOTO 41
 #define TK_IDENTIFIER 42
-
-// unordered_map<int,string> lookup = {
-// 	{1, "OPEN_P"},
-// 	{2, "CLOSED_P"},
-// 	{3, "OPEN_CB"},
-// 	{4, "CLOSED_CB"},
-// 	{5, "OPEN_SB"},
-// 	{6, "CLOSED_SB"},
-// 	{7, "SEMICOLON"},
-// 	{8, "COMMA"},
-// 	{9, "NUMBER_LITERAL"},
-// 	{10, "STRING_LITERAL"},
-// 	{11, "CHAR_LITERAL"},
-// 	{12, "PLUS"},
-// 	{13, "MINUS"},
-// 	{14, "EXCLAMATION"},
-// 	{15, "TILDA"},
-// 	{16, "AMPERSAND"},
-// 	{17, "ASTERISK"},
-// 	{18, "EQUAL"},
-// 	{19, "FORWARD_SLASH"},
-// 	{20, "PERCENT"},
-// 	{21, "CARET"},
-// 	{22, "GREATER"},
-// 	{23, "LESS"},
-// 	{24, "QUESTION"},
-// 	{25, "PIPE"},
-// 	{26, "INT"},
-// 	{27, "FLOAT"},
-// 	{28, "CHAR"},
-// 	{29, "VOID"},
-// 	{30, "WHILE"},
-// 	{31, "FOR"},
-// 	{32, "DO"},
-// 	{33, "IF"},
-// 	{34, "ELSE"},
-// 	{35, "SWITCH"},
-// 	{36, "CASE"},
-// 	{37, "DEFAULT"},
-// 	{38, "BREAK"},
-// 	{39, "CONTINUE"},
-// 	{40, "RETURN"},
-// 	{41, "GOTO"},
-// 	{42, "IDENTIFIER"}
-// };
 
 int linecount = 1;
 

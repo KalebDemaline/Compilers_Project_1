@@ -1,4 +1,6 @@
 #!/bin/bash
+# Jansen Craft & Kaleb Demaline
+
 FILES=./"$1"/*
 dirEntered="$1"
 len=${#dirEntered}
