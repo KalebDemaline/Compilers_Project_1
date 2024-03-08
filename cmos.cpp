@@ -15,8 +15,8 @@ vector<size_t> winnow (int w, const vector<string>& k_grams, hash<string>& hashe
     vector<size_t> fingerprints;
     int min_hash_index = 0;
 
-    // Load initial w k grams
-    for (int k_idx = 0; k_idx < w; k_idx++){
+    // Load initial w-1 k grams
+    for (int k_idx = 0; k_idx < w-1; k_idx++){
         buffer.push_back(hasher(k_grams[k_idx]));
         buffer.pop_front();
     }
