@@ -4,14 +4,13 @@
 #include <deque>
 #include <vector>
 #include <algorithm>
-#include <climits>
 #include <iterator>
 #include <iomanip>
 
 using namespace std;
 
 vector<size_t> winnow (int w, const vector<string>& k_grams, hash<string>& hasher){
-    deque<size_t> buffer(w, SIZE_T_MAX);
+    deque<size_t> buffer(w, SIZE_MAX);
     vector<size_t> fingerprints;
     int min_hash_index = 0;
 
