@@ -5,7 +5,7 @@
 ### Execution Instruction
 
 ```
-chmod -x PlagarismDetector.sh
+chmod +x PlagarismDetector.sh
 ```
 
 ```
