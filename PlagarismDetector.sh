@@ -10,6 +10,7 @@ for f in $FILES
 do
   echo "Tokenizing ${f:len} file..."
   # take action on each file. $f store current file name
+	touch scanner_out.txt tokens.txt
 	./scanner < $f > scanner_out.txt
 	echo -ne "${f:len}">>tokens.txt
 	echo -ne " ">>tokens.txt
