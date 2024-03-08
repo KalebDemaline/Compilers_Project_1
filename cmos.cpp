@@ -1,6 +1,5 @@
 #include <iostream>
 #include <deque>
-#include <functional>
 #include <vector>
 #include <algorithm>
 #include <climits>
